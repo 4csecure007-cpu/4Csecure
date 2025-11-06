@@ -92,7 +92,11 @@
       "Bash(cd:*)",
       "Bash(git log:*)",
       "Bash(git rev-parse:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(tree:*)",
+      "Bash(open http://localhost:5174)",
+      "Bash(cat:*)",
+      "Bash(npx supabase functions deploy:*)"
     ],
     "deny": [],
     "ask": []

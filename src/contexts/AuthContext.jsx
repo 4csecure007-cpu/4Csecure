@@ -57,17 +57,22 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserRole = async (userId) => {
     try {
+      // Wait a brief moment for the database trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 500))
+
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .single()
-      
+
       if (error) {
         console.error('Error fetching user role:', error)
-        setUserRole('user') // default role
+        // Default to 'user' role if fetch fails
+        setUserRole('user')
       } else {
         setUserRole(data?.role || 'user')
+        console.log('User role fetched:', data?.role)
       }
     } catch (error) {
       console.error('Error:', error)
@@ -99,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, userData = {}) => {
     try {
       console.log('Starting Supabase signUp...', { email })
-      
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -107,35 +112,44 @@ export const AuthProvider = ({ children }) => {
           data: userData
         }
       })
-      
-      console.log('Supabase signUp result:', { 
-        user: data?.user ? 'created' : null, 
-        error: error?.message 
+
+      console.log('Supabase signUp result:', {
+        user: data?.user ? 'created' : null,
+        error: error?.message
       })
-      
-      if (error) {
-        return { data, error }
-      }
-      
-      // Only create user_roles entry if user was successfully created
-      if (data.user && !error) {
-        console.log('Creating user role entry...')
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert([
-            { user_id: data.user.id, role: 'user' }
-          ])
-        
-        if (roleError) {
-          console.error('Error creating user role:', roleError)
-        } else {
-          console.log('User role created successfully')
-        }
-      }
-      
+
+      // Database trigger will automatically create user role
       return { data, error }
     } catch (error) {
       console.error('SignUp error:', error)
+      return { data: null, error }
+    }
+  }
+
+  const signInWithGoogle = async () => {
+    try {
+      console.log('Starting Google OAuth sign-in...')
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/subscription`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      })
+
+      if (error) {
+        console.error('Google sign-in error:', error)
+        return { data, error }
+      }
+
+      console.log('Google OAuth initiated successfully')
+      return { data, error }
+    } catch (error) {
+      console.error('Google sign-in error:', error)
       return { data: null, error }
     }
   }
@@ -217,6 +231,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     signIn,
     signUp,
+    signInWithGoogle,
     signOut,
     isAdmin: userRole === 'admin',
     isUser: userRole === 'user'

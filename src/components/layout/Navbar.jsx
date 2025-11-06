@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -43,19 +43,19 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 shadow-xl backdrop-blur-sm sticky top-0 z-50">
+    <nav className="bg-white shadow-md backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 sm:h-16">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           <div className="flex items-center">
-            <Link 
-              to="/" 
-              className="text-lg sm:text-2xl font-bold text-white hover:text-blue-100 transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 sm:space-x-2"
+            <Link
+              to="/"
+              className="flex items-center transition-all duration-300 hover:opacity-80"
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-blue-600 font-bold text-xs sm:text-sm">4C</span>
-              </div>
-              <span className="hidden sm:inline">4CSecure</span>
-              <span className="sm:hidden">4CS</span>
+              <img
+                src="/PNG/Horizontal_Logo.png"
+                alt="4C Management BZ Services"
+                className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto"
+              />
             </Link>
           </div>
           
@@ -63,13 +63,13 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="group relative p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 mobile-min-h-44 mobile-min-w-44"
+              className="group relative p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-300 mobile-min-h-44 mobile-min-w-44"
               aria-label="Toggle mobile menu"
             >
               <div className="flex flex-col space-y-1">
-                <span className={`block w-6 h-0.5 bg-white transition-all duration-300 transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                <span className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`block w-6 h-0.5 bg-white transition-all duration-300 transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                <span className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                <span className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
               </div>
             </button>
           </div>
@@ -78,14 +78,14 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
             {user ? (
               <>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg px-2 lg:px-3 py-2 border border-white/20">
-                  <span className="text-xs lg:text-sm text-blue-100">
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 lg:mr-2 ${
-                      userRole === 'admin' ? 'bg-yellow-400' : 'bg-green-400'
-                    }`}></span>
-                    <span className="hidden lg:inline">{userRole === 'admin' ? 'Admin' : 'User'} | </span>
-                    <span className="lg:hidden">{userRole === 'admin' ? 'A' : 'U'} | </span>
-                    <span className="max-w-24 lg:max-w-none truncate inline-block">{user.email}</span>
+                <div className="bg-gray-100 rounded-lg px-3 lg:px-4 py-2 border border-gray-300 flex items-center">
+                  <span className={`inline-block w-2 h-2 rounded-full mr-2 flex-shrink-0 ${
+                    userRole === 'admin' ? 'bg-yellow-500' : 'bg-green-500'
+                  }`}></span>
+                  <span className="text-xs lg:text-sm text-gray-700 whitespace-nowrap">
+                    <span className="font-medium">{userRole === 'admin' ? 'Admin' : 'User'}</span>
+                    <span className="mx-2">|</span>
+                    <span className="truncate max-w-[120px] lg:max-w-[200px] inline-block align-bottom">{user.email}</span>
                   </span>
                 </div>
                 {userRole === 'admin' && (
@@ -140,22 +140,7 @@ const Navbar = () => {
                   <span className="lg:hidden">{isSigningOut ? '...' : 'Out'}</span>
                 </button>
               </>
-            ) : (
-              <div className="flex items-center space-x-2 lg:space-x-3">
-                <Link 
-                  to="/auth/login" 
-                  className="text-white hover:text-blue-100 px-3 lg:px-4 py-2 text-xs lg:text-sm font-medium transition-all duration-300 hover:bg-white/10 rounded-lg mobile-min-h-44"
-                >
-                  Sign In
-                </Link>
-                <Link 
-                  to="/auth/register" 
-                  className="bg-white text-blue-600 hover:bg-blue-50 px-4 lg:px-6 py-2 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg mobile-min-h-44"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
+            ) : null}
           </div>
 
         </div>
@@ -164,14 +149,14 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${
         isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-      } overflow-hidden bg-gradient-to-b from-blue-700 to-purple-800`}>
+      } overflow-hidden bg-gray-50 border-t border-gray-200`}>
         <div className="px-4 py-4 space-y-3">
           {user ? (
             <>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                <span className="text-sm text-blue-100">
+              <div className="bg-white rounded-lg p-3 border border-gray-300 shadow-sm">
+                <span className="text-sm text-gray-700">
                   <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                    userRole === 'admin' ? 'bg-yellow-400' : 'bg-green-400'
+                    userRole === 'admin' ? 'bg-yellow-500' : 'bg-green-500'
                   }`}></span>
                   {userRole === 'admin' ? 'Admin' : 'User'} | {user.email}
                 </span>
@@ -224,24 +209,7 @@ const Navbar = () => {
                 {isSigningOut ? 'Signing Out...' : 'Sign Out'}
               </button>
             </>
-          ) : (
-            <>
-              <Link 
-                to="/auth/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full text-white text-center py-3 px-4 rounded-lg hover:bg-white/10 transition-all duration-300 transform hover:scale-105 mobile-min-h-44 flex items-center justify-center font-medium"
-              >
-                Sign In
-              </Link>
-              <Link 
-                to="/auth/register"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block w-full bg-white text-blue-600 hover:bg-blue-50 text-center py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 mobile-min-h-44 flex items-center justify-center"
-              >
-                Sign Up
-              </Link>
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </nav>

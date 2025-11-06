@@ -111,7 +111,7 @@ const DocumentUpload = ({ onDocumentUploaded }) => {
       // Upload file to Supabase Storage with increased timeout for large files
       const fileExt = formData.file.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
-      const filePath = `documents/${fileName}`
+      const filePath = fileName
 
       // For large files, use different upload options
       const uploadOptions = formData.file.size > 50 * 1024 * 1024 // 50MB
@@ -133,10 +133,14 @@ const DocumentUpload = ({ onDocumentUploaded }) => {
       if (uploadTimeout) clearTimeout(uploadTimeout)
       setUploadProgress(90)
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
+      // Get signed URL (valid for 1 year) - more secure than public URL
+      const { data: urlData, error: urlError } = await supabase.storage
         .from('documents')
-        .getPublicUrl(filePath)
+        .createSignedUrl(filePath, 31536000) // 365 days in seconds
+
+      if (urlError) {
+        throw new Error(`Failed to generate file URL: ${urlError.message}`)
+      }
 
       setUploadProgress(95)
 
@@ -157,7 +161,7 @@ const DocumentUpload = ({ onDocumentUploaded }) => {
             description: formData.description,
             file_name: formData.file.name,
             file_path: filePath,
-            file_url: urlData.publicUrl,
+            file_url: urlData.signedUrl,
             file_size: formData.file.size,
             file_type: formData.file.type,
             user_id: user?.id // Add user_id to track who uploaded
@@ -300,7 +304,7 @@ const DocumentUpload = ({ onDocumentUploaded }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="font-medium text-green-700">{formData.file.name}</p>
+                <p className="font-medium text-green-700 truncate max-w-full px-4">{formData.file.name}</p>
                 <p className="text-sm text-green-600">{formatFileSize(formData.file.size)}</p>
                 <button
                   type="button"

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import DocumentUpload from '../../components/admin/DocumentUpload'
 import DocumentList from '../../components/admin/DocumentList'
 
 const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ totalDocs: 0, totalSize: 0, recentUploads: 0 })
@@ -62,11 +64,22 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-gray-100">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-red-500 to-red-600 px-4 py-16 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative mx-auto max-w-7xl">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-0 left-0 flex items-center space-x-2 text-white/90 hover:text-white transition-all duration-300 group mb-8"
+          >
+            <svg className="w-6 h-6 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span className="font-medium">Back</span>
+          </button>
+
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
               <div className="p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
@@ -79,15 +92,15 @@ const AdminDashboard = () => {
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Admin Dashboard
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-blue-100">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-red-100">
               Manage and oversee all document uploads with powerful administrative tools
             </p>
           </div>
         </div>
-        
+
         {/* Animated background elements */}
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-red-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-red-400/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
       </div>
 
       {/* Stats Section */}
@@ -96,7 +109,7 @@ const AdminDashboard = () => {
           <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-red-500 to-red-600 group-hover:from-red-600 group-hover:to-red-700 transition-all duration-300">
                   <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
@@ -148,14 +161,14 @@ const AdminDashboard = () => {
         {/* Upload Section */}
         <div className="mt-16">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-6">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 px-8 py-6">
               <h2 className="text-2xl font-bold text-white flex items-center">
                 <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
                 Upload New Document
               </h2>
-              <p className="mt-2 text-blue-100">
+              <p className="mt-2 text-red-100">
                 Upload documents for secure viewing by users
               </p>
             </div>
@@ -168,14 +181,14 @@ const AdminDashboard = () => {
         {/* Documents Section */}
         <div className="mt-12">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-6">
+            <div className="bg-gradient-to-r from-slate-700 to-gray-800 px-8 py-6">
               <h2 className="text-2xl font-bold text-white flex items-center">
                 <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
                 Document Library
               </h2>
-              <p className="mt-2 text-emerald-100">
+              <p className="mt-2 text-gray-100">
                 Manage all uploaded documents and monitor access
               </p>
             </div>
@@ -183,7 +196,7 @@ const AdminDashboard = () => {
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin"></div>
+                    <div className="w-12 h-12 rounded-full border-4 border-red-200 border-t-red-600 animate-spin"></div>
                     <div className="mt-4 text-center">
                       <p className="text-gray-600 font-medium">Loading documents...</p>
                     </div>

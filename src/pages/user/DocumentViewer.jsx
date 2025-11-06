@@ -399,15 +399,15 @@ const DocumentViewer = () => {
 
   return (
     <SecurityProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-900">
       {/* Header Bar */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 shadow-xl border-b border-white/10 sticky top-0 z-10 backdrop-blur-sm">
+      <div className="bg-gradient-to-r from-red-600 to-red-700 shadow-xl border-b border-white/10 sticky top-0 z-10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center min-w-0">
               <button
                 onClick={handleBack}
-                className="group flex items-center text-blue-300 hover:text-white mr-3 sm:mr-6 transition-all duration-300 transform hover:scale-105 mobile-min-h-44"
+                className="group flex items-center text-white/90 hover:text-white mr-3 sm:mr-6 transition-all duration-300 transform hover:scale-105 mobile-min-h-44"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mr-1 sm:mr-2 group-hover:bg-white/20 transition-all duration-300">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -453,7 +453,7 @@ const DocumentViewer = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={() => window.location.reload()}
-                className="group relative bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mobile-min-h-44"
+                className="group relative bg-white/20 hover:bg-white/30 text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mobile-min-h-44"
               >
                 <svg className="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -462,7 +462,7 @@ const DocumentViewer = () => {
                 <span className="mobile-show sm-tablet-hide">⟳</span>
               </button>
 
-              <div className="hidden md:flex px-3 sm:px-4 py-2 bg-white/10 backdrop-blur-sm text-blue-100 rounded-xl text-xs sm:text-sm font-semibold items-center border border-white/20">
+              <div className="hidden md:flex px-3 sm:px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-xl text-xs sm:text-sm font-semibold items-center border border-white/20">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -483,23 +483,23 @@ const DocumentViewer = () => {
               <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="group flex items-center px-3 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 mobile-min-h-44"
+                className="group flex items-center px-3 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-red-50 hover:to-red-100 hover:border-red-300 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 mobile-min-h-44"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2 rounded-xl border border-blue-200">
-                <span className="text-xs font-medium text-blue-700">{currentPage}</span>
-                <span className="text-xs text-blue-500">/</span>
-                <span className="text-xs font-medium text-blue-700">{totalPages}</span>
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-red-50 to-orange-50 px-3 py-2 rounded-xl border border-red-200">
+                <span className="text-xs font-medium text-red-700">{currentPage}</span>
+                <span className="text-xs text-red-500">/</span>
+                <span className="text-xs font-medium text-red-700">{totalPages}</span>
               </div>
               
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="group flex items-center px-3 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 mobile-min-h-44"
+                className="group flex items-center px-3 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-red-50 hover:to-red-100 hover:border-red-300 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 mobile-min-h-44"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -513,7 +513,7 @@ const DocumentViewer = () => {
                 <button
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage <= 1}
-                  className="group flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-white disabled:hover:to-gray-50 disabled:hover:border-gray-200 disabled:hover:text-gray-700 transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-sm hover:shadow-md"
+                  className="group flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-red-50 hover:to-red-100 hover:border-red-300 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-white disabled:hover:to-gray-50 disabled:hover:border-gray-200 disabled:hover:text-gray-700 transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-sm hover:shadow-md"
                 >
                   <svg className="w-4 h-4 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -521,8 +521,8 @@ const DocumentViewer = () => {
                   Previous
                 </button>
               
-              <div className="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-2 rounded-xl border border-blue-200">
-                <span className="text-sm font-medium text-blue-700">Page</span>
+              <div className="flex items-center space-x-3 bg-gradient-to-r from-red-50 to-orange-50 px-4 py-2 rounded-xl border border-red-200">
+                <span className="text-sm font-medium text-red-700">Page</span>
                 <input
                   ref={pageInputRef}
                   type="number"
@@ -535,12 +535,12 @@ const DocumentViewer = () => {
                   onBlur={handlePageInputBlur}
                   placeholder={`1-${totalPages}`}
                   title={`Jump to page (1-${totalPages})`}
-                  className="w-20 px-3 py-2 text-sm text-center border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 placeholder-blue-400 bg-white/80"
+                  className="w-20 px-3 py-2 text-sm text-center border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 placeholder-red-400 bg-white/80"
                 />
-                <span className="text-sm font-medium text-blue-700">of {totalPages}</span>
+                <span className="text-sm font-medium text-red-700">of {totalPages}</span>
                 <button
                   onClick={handleGoClick}
-                  className="px-4 py-2 text-xs bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg border border-blue-600 transition-all duration-300 font-semibold transform hover:scale-105 shadow-sm hover:shadow-md"
+                  className="px-4 py-2 text-xs bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg border border-red-600 transition-all duration-300 font-semibold transform hover:scale-105 shadow-sm hover:shadow-md"
                   title="Go to page"
                 >
                   Go
@@ -550,7 +550,7 @@ const DocumentViewer = () => {
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="group flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-white disabled:hover:to-gray-50 disabled:hover:border-gray-200 disabled:hover:text-gray-700 transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-sm hover:shadow-md"
+                className="group flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl hover:from-red-50 hover:to-red-100 hover:border-red-300 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-white disabled:hover:to-gray-50 disabled:hover:border-gray-200 disabled:hover:text-gray-700 transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-sm hover:shadow-md"
               >
                 Next
                 <svg className="w-4 h-4 ml-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -576,7 +576,7 @@ const DocumentViewer = () => {
           {currentPageData?.imageData ? (
             <div className="bg-white/90 backdrop-blur-sm shadow-2xl border border-white/20 overflow-hidden rounded-3xl">
               {/* Page Indicator */}
-              <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center border border-white/30">
@@ -609,7 +609,7 @@ const DocumentViewer = () => {
               </div>
 
               {/* Watermarked Canvas Display */}
-              <div className="relative bg-gradient-to-br from-gray-50 to-blue-50 p-8">
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 p-8">
                 <div className="relative group">
                   <WatermarkedCanvas
                     imageData={currentPageData.imageData}

@@ -1,93 +1,222 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { loadStripe } from '@stripe/stripe-js'
+import { supabase } from '../../lib/supabase'
+
+// Initialize Stripe
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 const Subscription = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleSubscribe = () => {
-    // Navigate to documents page after subscription
-    navigate('/documents')
+  const handlePayment = () => {
+    setIsProcessing(true)
+
+    // Simplified: Just navigate directly to documents page
+    // Stripe integration will be added later
+    setTimeout(() => {
+      navigate('/documents')
+    }, 500)
   }
 
+
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Get Access to Premium Documents
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-gray-100">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-700 to-red-800 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* Animated background elements */}
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-red-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-red-400/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+
+        <div className="relative z-10 mx-auto max-w-7xl text-center">
+          <div className="flex items-center justify-center mb-6">
+            <div className="p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Unlock Premium Access
           </h1>
-          <p className="text-lg text-gray-600">
-            Subscribe now to access our exclusive collection of documents and resources
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-red-100">
+            Get lifetime access to all business setup documents and resources
           </p>
         </div>
+      </div>
 
-        {/* Subscription Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
-          <div className="text-center">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Premium Access</h2>
-              <div className="text-4xl font-bold text-blue-600 mb-2">
-                $29.99
-                <span className="text-lg font-normal text-gray-500">/lifetime</span>
+      {/* Main Content */}
+      <div className="relative -mt-12 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Pricing Card */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl border-2 border-white/20 shadow-2xl overflow-hidden">
+          {/* Ribbon */}
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 text-center">
+            <p className="text-sm font-semibold">🎉 One-Time Payment • Lifetime Access • No Recurring Fees</p>
+          </div>
+
+          <div className="p-8 sm:p-12">
+            {/* Price */}
+            <div className="text-center mb-10">
+              <div className="inline-block bg-gradient-to-r from-red-600 to-red-700 rounded-2xl px-8 py-6 mb-6">
+                <div className="text-5xl sm:text-6xl font-bold text-white mb-2">
+                  $29.99
+                </div>
+                <div className="text-red-100 text-lg">One-time payment</div>
               </div>
-              <p className="text-gray-500">One-time payment • Lifetime access</p>
+              <p className="text-gray-600 text-lg">Lifetime access • No hidden fees</p>
             </div>
 
-            <div className="mb-8">
-              <ul className="space-y-4 text-left">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  Access to all premium documents
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  Download and view offline
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  Regular content updates
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  No recurring fees
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                  24/7 support access
-                </li>
-              </ul>
+            {/* Features */}
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">All Premium Documents</h3>
+                  <p className="text-gray-600 text-sm">Access entire library instantly</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Secure Viewing</h3>
+                  <p className="text-gray-600 text-sm">Protected against copying</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Regular Updates</h3>
+                  <p className="text-gray-600 text-sm">New content added monthly</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Priority Support</h3>
+                  <p className="text-gray-600 text-sm">Get help when you need it</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Money-Back Guarantee</h3>
+                  <p className="text-gray-600 text-sm">30-day refund policy</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">No Hidden Fees</h3>
+                  <p className="text-gray-600 text-sm">Pay once, access forever</p>
+                </div>
+              </div>
             </div>
 
-            <button
-              onClick={handleSubscribe}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition duration-200"
-            >
-              Subscribe Now
-            </button>
+            {/* Buttons */}
+            <div className="space-y-4">
+              {/* Pay with Stripe Button */}
+              <button
+                onClick={handlePayment}
+                disabled={isProcessing}
+                className={`w-full font-bold py-4 px-6 rounded-xl text-lg transition-all duration-300 transform shadow-lg ${
+                  isProcessing
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:scale-105 hover:shadow-xl text-white'
+                }`}
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Processing...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span>Pay with Stripe</span>
+                  </div>
+                )}
+              </button>
 
-            <p className="text-sm text-gray-500 mt-4">
-              Secure payment • 30-day money-back guarantee
-            </p>
+              {/* Security Badge */}
+              <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 pt-4">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Secure Payment • SSL Encrypted</span>
+              </div>
+            </div>
+
+            {/* User Info */}
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <p className="text-center text-gray-600">
+                Logged in as: <span className="font-semibold text-gray-900">{user?.email}</span>
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* User Info */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-600">
-            Logged in as: <span className="font-semibold">{user?.email}</span>
-          </p>
+        {/* Trust Badges */}
+        <div className="mt-12 grid grid-cols-3 gap-6 text-center">
+          <div>
+            <div className="text-3xl font-bold text-gray-900">1000+</div>
+            <div className="text-gray-600 text-sm">Happy Customers</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-gray-900">50+</div>
+            <div className="text-gray-600 text-sm">Documents</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-gray-900">100%</div>
+            <div className="text-gray-600 text-sm">Satisfaction</div>
+          </div>
         </div>
       </div>
     </div>

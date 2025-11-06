@@ -5,26 +5,72 @@ import { useAuth } from '../../contexts/AuthContext'
 
 const Documents = () => {
   const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [verifyingPayment, setVerifyingPayment] = useState(false)
+
+  // Payment verification removed - will be added back later with proper Stripe integration
 
   useEffect(() => {
-    fetchDocuments()
-  }, [])
+    const fetchDocumentsOnLoad = async () => {
+      // Wait for auth to finish loading
+      if (authLoading) return
+
+      // If no user, ProtectedRoute will handle redirect
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        console.log('Loading documents for user:', user.id)
+
+        // Simplified: Just fetch documents directly without payment verification
+        // Payment integration will be added later
+        await fetchDocuments()
+      } catch (error) {
+        console.error('Error loading documents:', error)
+        setError(error.message)
+        setLoading(false)
+      }
+    }
+
+    fetchDocumentsOnLoad()
+  }, [user, authLoading])
 
   const fetchDocuments = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true)
+      setError(null)
+
+      console.log('Fetching documents from Supabase...')
+
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out after 10 seconds')), 10000)
+      )
+
+      const fetchPromise = supabase
         .from('documents')
         .select('*')
         .order('created_at', { ascending: false })
-      
+
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise])
+
+      console.log('Supabase response:', { data, error })
+
       if (error) throw error
+
       setDocuments(data || [])
+      console.log('Documents loaded:', data?.length || 0)
     } catch (error) {
       console.error('Error fetching documents:', error)
+      setError(error.message || 'Failed to load documents. Please try again.')
     } finally {
+      console.log('Setting loading to false')
       setLoading(false)
     }
   }
@@ -85,9 +131,9 @@ const Documents = () => {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-gray-100">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-700 to-red-800 px-4 py-16 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative mx-auto max-w-7xl">
           <div className="text-center">
@@ -101,20 +147,20 @@ const Documents = () => {
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Document Library
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-emerald-100">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-red-100">
               Your secure document collection awaits. Access premium content with complete privacy and security.
             </p>
           </div>
         </div>
-        
+
         {/* Animated background elements */}
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-emerald-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-teal-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-red-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-red-400/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
       </div>
 
-      {/* Success Message */}
+      {/* Info Banner */}
       <div className="relative -mt-12 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl p-6 shadow-xl border border-white/20 backdrop-blur-sm">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl p-6 shadow-xl border border-white/20 backdrop-blur-sm">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -124,8 +170,8 @@ const Documents = () => {
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-lg font-semibold">Subscription Active!</p>
-              <p className="text-emerald-100">You now have full access to all premium documents with 4CSecure protection.</p>
+              <p className="text-lg font-semibold">Access Granted!</p>
+              <p className="text-blue-100">You now have full access to all premium documents with complete security protection.</p>
             </div>
           </div>
         </div>
@@ -147,7 +193,7 @@ const Documents = () => {
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -157,13 +203,43 @@ const Documents = () => {
         </div>
 
         {/* Documents Grid */}
-        {loading ? (
+        {authLoading || loading || verifyingPayment ? (
           <div className="flex items-center justify-center py-16">
             <div className="relative">
-              <div className="w-16 h-16 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin"></div>
+              <div className="w-16 h-16 rounded-full border-4 border-red-200 border-t-red-600 animate-spin"></div>
               <div className="mt-4 text-center">
-                <p className="text-gray-600 font-medium">Loading your documents...</p>
-                <p className="text-gray-500 text-sm">Please wait while we fetch your secure content</p>
+                <p className="text-gray-600 font-medium">
+                  {authLoading ? 'Authenticating...' : verifyingPayment ? 'Verifying payment...' : 'Loading your documents...'}
+                </p>
+                <p className="text-gray-500 text-sm">
+                  {authLoading ? 'Verifying your session' : verifyingPayment ? 'Please wait while we confirm your payment (this may take a few seconds)' : 'Please wait while we fetch your secure content'}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-16">
+            <div className="bg-red-50/80 backdrop-blur-sm rounded-3xl border-2 border-red-200 shadow-xl p-12 max-w-2xl mx-auto">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Unable to Load Documents</h3>
+              <p className="text-gray-700 mb-2 font-medium">{error}</p>
+              <p className="text-gray-600 text-sm mb-6">
+                This might be because the documents table hasn't been set up yet in your database.
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={fetchDocuments}
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  Try Again
+                </button>
+                <p className="text-sm text-gray-500">
+                  If this error persists, please contact your administrator
+                </p>
               </div>
             </div>
           </div>
@@ -226,7 +302,7 @@ const Documents = () => {
                           </svg>
                           <span>{formatFileSize(document.file_size)}</span>
                         </div>
-                        <div className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                        <div className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">
                           Premium
                         </div>
                       </div>
@@ -264,7 +340,7 @@ const Documents = () => {
                           </svg>
                           <span>Secure View</span>
                         </div>
-                        <div className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                        <div className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">
                           Premium
                         </div>
                       </div>
