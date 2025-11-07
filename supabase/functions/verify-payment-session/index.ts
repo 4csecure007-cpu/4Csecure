@@ -62,6 +62,7 @@ serve(async (req) => {
           stripe_payment_intent_id: session.payment_intent as string,
           stripe_session_id: sessionId,
           amount: session.amount_total,
+          currency: session.currency || 'usd',
           created_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'

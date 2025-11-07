@@ -62,9 +62,11 @@ serve(async (req) => {
         .from('payments')
         .upsert({
           user_id: session.metadata?.userId || session.client_reference_id,
-          payment_status: 'completed',
+          payment_status: 'paid',
           stripe_payment_intent_id: session.payment_intent as string,
+          stripe_session_id: session.id,
           amount: session.amount_total,
+          currency: session.currency || 'usd',
           created_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'

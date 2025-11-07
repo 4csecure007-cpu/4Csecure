@@ -96,7 +96,19 @@
       "Bash(tree:*)",
       "Bash(open http://localhost:5174)",
       "Bash(cat:*)",
-      "Bash(npx supabase functions deploy:*)"
+      "Bash(npx supabase functions deploy:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(.gitignore)",
+      "Bash(git commit:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(for port in 3000 3001 5173 5174 5175 5176 8080 8000 4000 5000)",
+      "Bash(do lsof -ti :$port)",
+      "Bash(done)",
+      "Bash(killall node:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)"
     ],
     "deny": [],
     "ask": []

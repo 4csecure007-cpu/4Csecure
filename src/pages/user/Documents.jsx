@@ -12,34 +12,135 @@ const Documents = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [verifyingPayment, setVerifyingPayment] = useState(false)
 
-  // Payment verification removed - will be added back later with proper Stripe integration
+  // Debug: Component render
+  console.log('📄 Documents component rendered', {
+    userId: user?.id,
+    authLoading,
+    hasNavigate: !!navigate,
+    location: window.location.href
+  })
 
   useEffect(() => {
-    const fetchDocumentsOnLoad = async () => {
+    console.log('🔍 Documents useEffect triggered', {
+      user: user?.id,
+      authLoading,
+      hasNavigate: !!navigate,
+      url: window.location.href
+    })
+
+    const verifyPaymentAndLoadDocuments = async () => {
+      console.log('🔄 verifyPaymentAndLoadDocuments started', { authLoading, user: user?.id })
+
       // Wait for auth to finish loading
-      if (authLoading) return
+      if (authLoading) {
+        console.log('⏳ Still loading auth, returning...')
+        return
+      }
 
       // If no user, ProtectedRoute will handle redirect
       if (!user) {
+        console.log('❌ No user found, exiting...')
         setLoading(false)
         return
       }
 
       try {
-        console.log('Loading documents for user:', user.id)
+        console.log('✅ User authenticated:', user.id)
+        console.log('Checking payment status for user:', user.id)
 
-        // Simplified: Just fetch documents directly without payment verification
-        // Payment integration will be added later
-        await fetchDocuments()
+        // Check if user is admin
+        console.log('📋 Checking user role...')
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single()
+
+        const isAdmin = roleData?.role === 'admin'
+        console.log('👤 User role:', roleData?.role, 'Is admin:', isAdmin)
+
+        if (isAdmin) {
+          console.log('👑 Admin user - bypassing payment check')
+          await fetchDocuments()
+          return
+        }
+
+        // Check URL for session_id (returned from Stripe)
+        console.log('🔗 Checking URL for session_id...')
+        const params = new URLSearchParams(window.location.search)
+        const sessionId = params.get('session_id')
+        console.log('🔑 Session ID from URL:', sessionId)
+
+        if (sessionId) {
+          console.log('💳 Session ID found, verifying payment with Stripe...')
+          setVerifyingPayment(true)
+
+          try {
+            // Call verify-payment-session Edge Function
+            console.log('🚀 Invoking verify-payment-session Edge Function...')
+            const { data: verifyData, error: verifyError } = await supabase.functions.invoke(
+              'verify-payment-session',
+              {
+                body: { sessionId, userId: user.id }
+              }
+            )
+
+            console.log('📥 Edge Function response:', { verifyData, verifyError })
+
+            setVerifyingPayment(false)
+
+            if (verifyError) {
+              console.error('❌ Error verifying payment:', verifyError)
+              setError('Payment verification failed: ' + verifyError.message)
+            } else if (verifyData?.success) {
+              console.log('✅ Payment verified successfully!')
+              // Clean URL
+              window.history.replaceState({}, '', '/documents')
+            } else {
+              console.warn('⚠️ Payment verification returned unsuccessful:', verifyData)
+              setError('Payment verification was unsuccessful')
+            }
+          } catch (invokeError) {
+            console.error('💥 Exception calling Edge Function:', invokeError)
+            setVerifyingPayment(false)
+            setError('Failed to verify payment: ' + invokeError.message)
+          }
+        } else {
+          console.log('ℹ️ No session_id in URL')
+        }
+
+        // Check if payment exists in database
+        console.log('💾 Checking database for payment record...')
+        const { data: payment, error: paymentError } = await supabase
+          .from('payments')
+          .select('payment_status')
+          .eq('user_id', user.id)
+          .single()
+
+        console.log('💳 Payment query result:', { payment, paymentError })
+
+        if (paymentError && paymentError.code !== 'PGRST116') {
+          // PGRST116 = no rows (expected for unpaid users)
+          console.error('❌ Database error:', paymentError)
+          throw paymentError
+        }
+
+        if (payment && (payment.payment_status === 'paid' || payment.payment_status === 'completed')) {
+          console.log('✅ Payment found - loading documents')
+          await fetchDocuments()
+        } else {
+          console.log('❌ No valid payment found - redirecting to subscription')
+          navigate('/subscription')
+        }
       } catch (error) {
-        console.error('Error loading documents:', error)
+        console.error('💥 Error checking payment:', error)
         setError(error.message)
         setLoading(false)
       }
     }
 
-    fetchDocumentsOnLoad()
-  }, [user, authLoading])
+    verifyPaymentAndLoadDocuments()
+  }, [user, authLoading, navigate])
 
   const fetchDocuments = async () => {
     try {

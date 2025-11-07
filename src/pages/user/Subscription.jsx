@@ -12,14 +12,40 @@ const Subscription = () => {
   const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsProcessing(true)
 
-    // Simplified: Just navigate directly to documents page
-    // Stripe integration will be added later
-    setTimeout(() => {
-      navigate('/documents')
-    }, 500)
+    try {
+      console.log('Creating Stripe Checkout session...')
+
+      // Call Supabase Edge Function to create Stripe Checkout session
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          userId: user.id,
+          email: user.email,
+          successUrl: `${window.location.origin}/documents?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/subscription`
+        }
+      })
+
+      if (error) {
+        console.error('Error creating checkout session:', error)
+        throw new Error(error.message || 'Failed to create checkout session')
+      }
+
+      if (!data?.checkoutUrl) {
+        throw new Error('No checkout URL received from server')
+      }
+
+      console.log('Redirecting to Stripe Checkout...')
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.checkoutUrl
+    } catch (error) {
+      console.error('Payment error:', error)
+      alert('Payment failed: ' + (error.message || 'Please try again'))
+      setIsProcessing(false)
+    }
   }
 
 

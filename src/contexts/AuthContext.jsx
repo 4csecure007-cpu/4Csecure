@@ -17,65 +17,110 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('🔐 AuthProvider: Initializing...')
+    console.log('🔐 AuthProvider: Current URL:', window.location.href)
+
     getInitialSession()
-    
+
+    // Set a timeout failsafe - if still loading after 10 seconds, force complete
+    const loadingTimeout = setTimeout(() => {
+      console.warn('⚠️ AuthProvider: Loading timeout reached (10s), forcing loading=false')
+      setLoading(false)
+    }, 10000)
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email)
-      
+      console.log('🔐 Auth state changed:', event, session?.user?.email)
+      console.log('🔐 Session details:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        userId: session?.user?.id
+      })
+
       if (session?.user) {
+        console.log('✅ User session found:', session.user.email)
         setUser(session.user)
         await fetchUserRole(session.user.id)
       } else {
+        console.log('❌ No user session')
         setUser(null)
         setUserRole(null)
       }
+      console.log('🔐 Setting loading=false after auth state change')
       setLoading(false)
+      clearTimeout(loadingTimeout)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      console.log('🔐 AuthProvider: Cleaning up...')
+      clearTimeout(loadingTimeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   const getInitialSession = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      console.log('Initial session check:', session?.user?.email || 'no session')
-      
+      console.log('🔍 getInitialSession: Starting...')
+      console.log('🔍 Current URL:', window.location.href)
+      console.log('🔍 URL has session_id:', window.location.search.includes('session_id'))
+
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      console.log('🔍 getSession result:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        email: session?.user?.email,
+        error: error?.message
+      })
+
+      if (error) {
+        console.error('❌ Error getting session:', error)
+      }
+
       if (session?.user) {
+        console.log('✅ Initial session found:', session.user.email)
         setUser(session.user)
         await fetchUserRole(session.user.id)
+        console.log('🔍 Setting loading=false (session found)')
         setLoading(false)
       } else {
+        console.log('ℹ️ No initial session found')
         setUser(null)
         setUserRole(null)
+        console.log('🔍 Setting loading=false (no session)')
         setLoading(false)
       }
     } catch (error) {
-      console.error('Error getting session:', error)
+      console.error('💥 Exception in getInitialSession:', error)
       setLoading(false)
     }
   }
 
   const fetchUserRole = async (userId) => {
     try {
+      console.log('👤 fetchUserRole: Starting for userId:', userId)
       // Wait a brief moment for the database trigger to complete
       await new Promise(resolve => setTimeout(resolve, 500))
 
+      console.log('👤 Querying user_roles table...')
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .single()
 
+      console.log('👤 User role query result:', { data, error: error?.message })
+
       if (error) {
-        console.error('Error fetching user role:', error)
+        console.error('❌ Error fetching user role:', error)
         // Default to 'user' role if fetch fails
+        console.log('👤 Defaulting to "user" role')
         setUserRole('user')
       } else {
+        console.log('✅ User role fetched:', data?.role)
         setUserRole(data?.role || 'user')
-        console.log('User role fetched:', data?.role)
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error('💥 Exception in fetchUserRole:', error)
       setUserRole('user')
     }
   }
